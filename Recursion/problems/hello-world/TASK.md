@@ -1,7 +1,7 @@
 ---
 id: hello-world
 title: Emit the first Recursion message
-status: ready
+status: done
 parent: null
 base_branch: main
 acceptance:
