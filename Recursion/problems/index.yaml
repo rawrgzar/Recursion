@@ -5,5 +5,5 @@ problems:
     depends_on: []
   - id: bootstrap-language
     path: bootstrap-language
-    status: ready
+    status: in_progress
     depends_on: [cold-start]

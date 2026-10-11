@@ -1,10 +1,11 @@
 id: bootstrap-language
-title: Bootstrap the first Recursion language compiler
-status: ready
+title: Define and bootstrap the first Recursion site compiler
+status: in_progress
 parent: null
 depends_on: [cold-start]
 acceptance:
-  - Define compiler stages and the agreed target in HANDOFF.md.
-  - Preserve an operator brief, generated Recursion source, and expected HTML example.
+  - Inventory the current syntax and publish the initial reserved-word list.
+  - Define the supported YAML page schema and deterministic Bootstrap HTML mapping.
+  - Provide a repeatable local generator and build the operator example from YAML.
   - Preserve source inputs and stage outputs in the named folders.
   - Record commands and a repeatable comparison demonstrating the bootstrap result.

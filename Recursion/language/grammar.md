@@ -37,3 +37,5 @@ Operators may provide a plain-text brief rather than write Recursion source. For
 - HTML structure, escaping, unknown keys, and error reporting still need precise definitions and tests.
 
 This is a working sketch, not a settled specification. Record refinements and matching examples or verification updates in the bootstrap-language problem.
+
+The currently reserved vocabulary is listed in [reserved-words.yaml](reserved-words.yaml). Theme names and layout values are data values, not reserved words.
