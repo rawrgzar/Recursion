@@ -6,10 +6,53 @@
   <title>Breakfast Blaster</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <style>
+    :root {
+      --site-background: #101827;
+      --site-surface: #1d293b;
+      --site-text: #f2f6ff;
+      --site-muted: #c2cde0;
+      --site-accent: #61a7ff;
+      --site-accent-text: #10213d;
+      --site-hero-start: #203b63;
+      --site-hero-end: #263354;
+      --site-radius: 20px;
+    }
+    body.site-page { min-height: 100vh; color: var(--site-text); background: var(--site-background); }
+    .site-page main { max-width: 1080px; }
+    .site-hero {
+      position: relative; isolation: isolate; overflow: hidden;
+      margin-bottom: clamp(2rem, 6vw, 4.5rem);
+      padding: clamp(2.5rem, 8vw, 6rem) clamp(1.5rem, 7vw, 5.5rem) !important;
+      border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent);
+      border-radius: var(--site-radius);
+      background: linear-gradient(125deg, var(--site-hero-start), var(--site-hero-end));
+      box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--site-text) 12%, transparent);
+    }
+    .site-hero::after {
+      position: absolute; z-index: -1; top: -8rem; right: -5rem;
+      width: clamp(14rem, 40vw, 28rem); aspect-ratio: 1;
+      border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--site-accent) 28%, transparent), transparent 70%);
+      box-shadow: 0 0 0 2rem color-mix(in srgb, var(--site-text) 3%, transparent);
+      content: "";
+    }
+    .site-hero h1 { max-width: 15ch; margin-inline: auto; font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1; letter-spacing: -.05em; text-wrap: balance; }
+    .site-hero .lead { color: var(--site-muted); font-size: clamp(1.1rem, 2vw, 1.35rem); }
+    .site-page .btn-primary { padding: .85rem 1.5rem; border: 0; border-radius: 999px; color: var(--site-accent-text); background: var(--site-accent); box-shadow: 0 .6rem 1.5rem color-mix(in srgb, var(--site-accent) 28%, transparent); font-weight: 700; transition: transform .18s ease, box-shadow .18s ease; }
+    .site-page .btn-primary:hover { color: var(--site-accent-text); background: color-mix(in srgb, var(--site-accent) 88%, var(--site-text)); transform: translateY(-2px); }
+    .site-page .navbar { background: var(--site-accent) !important; color: var(--site-accent-text) !important; }
+    .site-page .navbar .navbar-brand, .site-page .navbar .nav-link { color: var(--site-accent-text) !important; }
+    .site-page section > h2 { margin-bottom: 1.5rem !important; font-size: clamp(1.6rem, 3vw, 2.15rem); letter-spacing: -.03em; }
+    .site-card { height: 100%; overflow: hidden; border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent); border-radius: var(--site-radius); color: var(--site-text); background: var(--site-surface); box-shadow: 0 .75rem 2rem color-mix(in srgb, var(--site-text) 8%, transparent); text-align: left; transition: transform .18s ease, box-shadow .18s ease; }
+    .site-card::before { display: block; height: 3px; background: linear-gradient(90deg, var(--site-accent), var(--site-hero-end)); content: ""; }
+    .site-card:hover { box-shadow: 0 1rem 2rem color-mix(in srgb, var(--site-text) 14%, transparent); transform: translateY(-3px); }
+    .site-card .card-body { padding: 1.5rem; }
+    @media (prefers-reduced-motion: reduce) { .site-page .btn-primary, .site-card { transition: none; } .site-page .btn-primary:hover, .site-card:hover { transform: none; } }
     .recursion-shell { max-width: 1080px; margin-inline: auto; }
   </style>
 </head>
-<body>
+<body class="site-page">
   <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" aria-label="Main navigation">
     <div class="container-fluid px-3 px-sm-4 recursion-shell">
       <a class="navbar-brand" href="#home">Breakfast Blaster</a>
@@ -25,7 +68,7 @@
     </div>
   </nav>
   <main id="home" class="container-fluid px-3 px-sm-4 recursion-shell py-4 py-lg-5">
-    <section id="start" class="py-4 py-md-5">
+    <section id="start" class="site-hero py-4 py-md-5">
       <h1 class="display-5 fw-bold mb-3">Ready for breakfast?</h1>
       <p class="lead mb-4">Build. Discover. Repeat.</p>
       <button type="button" class="btn btn-primary btn-lg">Start Game</button>

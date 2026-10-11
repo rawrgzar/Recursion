@@ -8,6 +8,8 @@ import re
 import sys
 from pathlib import Path
 
+from design import normalize_style, render_design_css
+
 
 PROBLEM_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = PROBLEM_DIR / "source" / "operator-brief.yaml"
@@ -40,10 +42,11 @@ def parse_scalar(value: str, path: Path, line: int) -> str:
 
 
 def parse_page(path: Path) -> dict[str, object]:
-    page: dict[str, object] = {"hero": {}, "navbar": {"items": []}}
+    page: dict[str, object] = {"hero": {}, "navbar": {"items": []}, "style": {}}
     seen_top: set[str] = set()
     seen_hero: set[str] = set()
     seen_nav: set[str] = set()
+    seen_style: set[str] = set()
     block: str | None = None
     nav_items_open = False
     current_nav_item: dict[str, str] | None = None
@@ -87,9 +90,9 @@ def parse_page(path: Path) -> dict[str, object]:
             if key in seen_top:
                 raise fail(path, number, f"duplicate key '{key}'")
             seen_top.add(key)
-            if key not in {"page", "layout", "max_width", "theme", "hero", "navbar"}:
+            if key not in {"page", "layout", "max_width", "theme", "hero", "navbar", "style"}:
                 raise fail(path, number, f"unknown page key '{key}'")
-            if key in {"hero", "navbar"}:
+            if key in {"hero", "navbar", "style"}:
                 if raw_value is not None:
                     raise fail(path, number, f"'{key}' must be a mapping block")
                 block = key
@@ -125,6 +128,15 @@ def parse_page(path: Path) -> dict[str, object]:
                 current_nav_item = None
             else:
                 raise fail(path, number, f"unknown navbar key '{key}'")
+        elif indent == 2 and block == "style":
+            if key in seen_style:
+                raise fail(path, number, f"duplicate style setting '{key}'")
+            seen_style.add(key)
+            if raw_value is None:
+                raise fail(path, number, f"'style.{key}' must have a value")
+            style = page["style"]
+            assert isinstance(style, dict)
+            style[key] = parse_scalar(raw_value, path, number)
         else:
             raise fail(path, number, "invalid indentation or property for this block")
 
@@ -146,6 +158,13 @@ def parse_page(path: Path) -> dict[str, object]:
         raise fail(path, line, f"unsupported theme '{theme}' (choose light or blue-dark)")
     page["layout"] = layout
     page["theme"] = theme
+    style = page["style"]
+    assert isinstance(style, dict)
+    try:
+        page["style"] = normalize_style(style, str(theme))
+    except ValueError as error:
+        line = next((i for i, row in enumerate(lines, 1) if row.startswith("style:")), 1)
+        raise fail(path, line, str(error)) from error
     page["has_navbar"] = "navbar" in seen_top
     max_width = page.get("max_width", "1080px")
     width_match = re.fullmatch(r"([0-9]{3,4})px", str(max_width))
@@ -177,11 +196,12 @@ def render(page: dict[str, object]) -> str:
     shell = 'container-fluid px-3 px-sm-4 recursion-shell' if page["layout"] == "wide" else layout_class
     is_dark = page["theme"] == "blue-dark"
     html_theme = ' data-bs-theme="dark"' if is_dark else ""
-    theme_style = (
-        f'  <style>\n    .recursion-shell {{ max-width: {page["max_width"]}; margin-inline: auto; }}\n  </style>'
-        if page["layout"] == "wide"
-        else ""
-    )
+    theme_style = render_design_css(page["style"])
+    if page["layout"] == "wide":
+        theme_style = theme_style.replace(
+            "  </style>",
+            f'    .recursion-shell {{ max-width: {page["max_width"]}; margin-inline: auto; }}\n  </style>',
+        )
     esc = lambda value: html.escape(str(value), quote=True)
     subtitle = ""
     if "subtitle" in hero:
@@ -226,9 +246,9 @@ def render(page: dict[str, object]) -> str:
   <link href="{BOOTSTRAP_CSS}" rel="stylesheet" integrity="{BOOTSTRAP_CSS_SRI}" crossorigin="anonymous">
 {theme_style}
 </head>
-<body>
+<body class="site-page">
 {navbar}  {shell_open}
-    <section id="{hero_id}" class="py-4 py-md-5">
+    <section id="{hero_id}" class="site-hero py-4 py-md-5">
       <h1 class="display-5 fw-bold mb-3">{esc(hero["title"])}</h1>{subtitle}
       <button type="button" class="btn btn-primary btn-lg">{esc(hero["button"])}</button>
     </section>

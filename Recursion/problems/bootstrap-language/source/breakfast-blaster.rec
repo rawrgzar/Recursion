@@ -1,6 +1,17 @@
 site "Breakfast Blaster"
-  theme: arcade
+  theme: blue-dark
   layout: centered
+
+  style:
+    background: "#101326"
+    surface: "#1b1f37"
+    text: "#f7f4ff"
+    muted: "#d4d4ec"
+    accent: "#ffd166"
+    accent_text: "#24152b"
+    hero_start: "#282351"
+    hero_end: "#144b65"
+    radius: 32px
 
   hero:
     title: "Ready for breakfast?"

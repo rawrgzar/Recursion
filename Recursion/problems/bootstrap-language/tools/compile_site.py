@@ -8,6 +8,8 @@ import re
 import sys
 from pathlib import Path
 
+from design import normalize_style, render_design_css
+
 
 PROBLEM_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = PROBLEM_DIR / "source" / "breakfast-blaster.rec"
@@ -29,11 +31,12 @@ def quoted(value: str, path: Path, line: int) -> str:
 
 def parse(path: Path) -> dict[str, object]:
     lines = path.read_text(encoding="utf-8").splitlines()
-    site: dict[str, object] = {"sections": []}
+    site: dict[str, object] = {"sections": [], "style": {}}
     hero: dict[str, str] = {}
     seen: set[str] = set()
     section: dict[str, object] | None = None
     in_hero = False
+    in_style = False
     for number, raw in enumerate(lines, 1):
         if not raw.strip():
             continue
@@ -71,9 +74,16 @@ def parse(path: Path) -> dict[str, object]:
                 seen.add(key)
                 section = None
                 in_hero = False
+                in_style = False
             elif text == "hero:" and "hero" not in seen:
                 seen.add("hero")
                 in_hero = True
+                in_style = False
+                section = None
+            elif text == "style:" and "style" not in seen:
+                seen.add("style")
+                in_style = True
+                in_hero = False
                 section = None
             elif section_match:
                 section = {"title": quoted(section_match.group(1), path, number), "cards": []}
@@ -81,8 +91,19 @@ def parse(path: Path) -> dict[str, object]:
                 assert isinstance(sections, list)
                 sections.append(section)
                 in_hero = False
+                in_style = False
             else:
-                raise error(path, number, "expected theme, layout, hero, or section")
+                raise error(path, number, "expected theme, layout, hero, style, or section")
+        elif indent == 4 and in_style:
+            match = re.fullmatch(r"([a-z_]+): (.+)", text)
+            if not match:
+                raise error(path, number, "expected a style setting and value")
+            key, value = match.groups()
+            settings = site["style"]
+            assert isinstance(settings, dict)
+            if key in settings:
+                raise error(path, number, f"duplicate style setting '{key}'")
+            settings[key] = quoted(value, path, number) if value.startswith('"') else value
         elif indent == 4 and in_hero:
             match = re.fullmatch(r"(title|subtitle|button): (.+)", text)
             if not match:
@@ -109,11 +130,17 @@ def parse(path: Path) -> dict[str, object]:
         if key not in hero:
             raise error(path, 1, f"missing hero {key}")
     theme = site.get("theme", "light")
-    if theme not in {"light", "arcade", "blue-dark"}:
+    if theme not in {"light", "blue-dark"}:
         line = next((n for n, row in enumerate(lines, 1) if row.strip().startswith("theme:")), 1)
         raise error(path, line, f"unsupported theme {theme!r}")
     site["theme"] = theme
     site["layout"] = site.get("layout", "container")
+    style = site["style"]
+    assert isinstance(style, dict)
+    try:
+        site["style"] = normalize_style(style, str(theme))
+    except ValueError as exc:
+        raise error(path, 1, str(exc)) from exc
     site["hero"] = hero
     return site
 
@@ -124,18 +151,14 @@ def render(site: dict[str, object]) -> str:
     assert isinstance(hero, dict)
     layout = "container text-center" if site["layout"] == "centered" else "container"
     theme = str(site["theme"])
-    body_attrs = (
-        ' data-theme="arcade" class="theme-arcade"'
-        if theme == "arcade"
-        else f' class="{esc(theme)}"'
-    )
     theme_attr = ' data-bs-theme="dark"' if theme == "blue-dark" else ""
+    theme_style = render_design_css(site["style"])
     subtitle = f'\n      <p class="lead mb-4">{esc(hero["subtitle"])}</p>' if "subtitle" in hero else ""
     sections = []
     for entry in site["sections"]:
         assert isinstance(entry, dict)
         cards = "\n".join(
-            f'        <div class="col"><article class="card h-100"><div class="card-body"><h3 class="h5 card-title">{esc(name)}</h3></div></article></div>'
+            f'        <div class="col"><article class="site-card"><div class="card-body"><h3 class="h5 card-title">{esc(name)}</h3></div></article></div>'
             for name in entry["cards"]
         )
         sections.append(
@@ -153,10 +176,11 @@ def render(site: dict[str, object]) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(site["title"])}</title>
   <link href="{BOOTSTRAP_CSS}" rel="stylesheet" integrity="{BOOTSTRAP_CSS_SRI}" crossorigin="anonymous">
+{theme_style}
 </head>
-<body{body_attrs}>
+<body class="site-page" data-theme="{esc(theme)}">
   <main class="{layout} py-4 py-lg-5">
-    <header class="py-4 py-md-5">
+    <header class="site-hero py-4 py-md-5">
       <h1 class="display-5 fw-bold mb-3">{esc(hero["title"])}</h1>{subtitle}
       <button type="button" class="btn btn-primary btn-lg">{esc(hero["button"])}</button>
     </header>{extra}

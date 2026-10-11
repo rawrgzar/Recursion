@@ -10,8 +10,19 @@ The bootstrap project explores a YAML-like site description. A full example is i
 
 ```text
 site "Breakfast Blaster"
-  theme: arcade
+  theme: blue-dark
   layout: centered
+
+  style:
+    background: "#101326"
+    surface: "#1b1f37"
+    text: "#f7f4ff"
+    muted: "#d4d4ec"
+    accent: "#ffd166"
+    accent_text: "#24152b"
+    hero_start: "#282351"
+    hero_end: "#144b65"
+    radius: 32px
 
   hero:
     title: "Ready for breakfast?"
@@ -32,6 +43,7 @@ Operators may provide a plain-text brief rather than write Recursion source. For
 - Quoted text is used for names and values containing punctuation or spaces.
 - `theme` and `layout` are scalar properties in the site block.
 - `hero` contains scalar properties such as `title`, `subtitle`, and `button`.
+- `style` optionally sets page colors and shape values; unspecified values use neutral defaults.
 - A `section` contains zero or more `card` entries.
 - The `print` statement remains a tiny cold-start smoke test, not the target site language.
 - HTML structure, escaping, unknown keys, and error reporting still need precise definitions and tests.

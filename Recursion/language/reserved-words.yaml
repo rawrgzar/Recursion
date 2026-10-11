@@ -22,6 +22,26 @@ words:
     context: Normalized YAML page title key
   - word: max_width
     context: Maximum pixel width for a wide site shell
+  - word: style
+    context: Optional visual design settings block
+  - word: background
+    context: Page background color design token
+  - word: surface
+    context: Card and panel background color design token
+  - word: text
+    context: Primary text color design token
+  - word: muted
+    context: Secondary text color design token
+  - word: accent
+    context: Primary action and decorative color design token
+  - word: accent_text
+    context: Text color used on the accent color
+  - word: hero_start
+    context: Start color for the hero panel gradient
+  - word: hero_end
+    context: End color for the hero panel gradient
+  - word: radius
+    context: Corner radius for hero and cards
   - word: navbar
     context: Responsive top navigation block
   - word: brand

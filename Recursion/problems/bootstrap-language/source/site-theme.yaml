@@ -2,6 +2,16 @@ page: Breakfast Blaster
 theme: blue-dark
 layout: wide
 max_width: 1080px
+style:
+  background: "#101827"
+  surface: "#1d293b"
+  text: "#f2f6ff"
+  muted: "#c2cde0"
+  accent: "#61a7ff"
+  accent_text: "#10213d"
+  hero_start: "#203b63"
+  hero_end: "#263354"
+  radius: 20px
 navbar:
   brand: Breakfast Blaster
   items:

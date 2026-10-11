@@ -14,7 +14,7 @@ The first `.rec` compiler is `tools/compile_site.py`. It implements the current 
 
 ## Syntax inventory
 
-The current Recursion example uses reserved syntax words `site`, `theme`, `layout`, `hero`, `title`, `subtitle`, `button`, `section`, and `card`. `print` is reserved for the cold-start smoke program. The normalized YAML page schema also reserves `page`, `max_width`, `navbar`, `brand`, `items`, `label`, and `href`. Theme names such as `blue-dark`, `arcade`, and layout values such as `centered`, `container`, and `wide` are data values, as are display strings such as `Breakfast Blaster` and `Start Game`.
+The current Recursion example uses reserved syntax words `site`, `theme`, `layout`, `style`, `hero`, `title`, `subtitle`, `button`, `section`, and `card`. `print` is reserved for the cold-start smoke program. The normalized YAML page schema also reserves `page`, `max_width`, `navbar`, `brand`, `items`, `label`, `href`, and the style design-token names. Theme names such as `blue-dark` and layout values such as `centered`, `container`, and `wide` are data values, as are display strings such as `Breakfast Blaster` and `Start Game`.
 
 See `../../language/reserved-words.yaml`, `../../language/grammar.md`, and `translation.md` for the versioned vocabulary, grammar notes, and HTML mapping.
 
@@ -24,6 +24,7 @@ See `../../language/reserved-words.yaml`, `../../language/grammar.md`, and `tran
 - Generated the sample standalone page from `source/operator-brief.yaml`.
 - Extended the generator for an optional responsive Bootstrap navbar and generated `output/theme-navbar.html` from `source/site-theme.yaml`.
 - Added a compiler for `source/breakfast-blaster.rec`; its generated page is `output/breakfast-blaster.html`.
+- Added shared design tokens in `tools/design.py` and responsive hero, button, and card styling. Both YAML and `.rec` inputs can set background, surface, text, muted text, accent, hero gradient colors, and corner radius; unspecified settings use neutral light or dark defaults. Motion effects honor reduced-motion preferences.
 - The self-hosted compiler stages and bootstrap comparison remain incomplete.
 
 ## Reproduce the `.rec` compilation
@@ -34,7 +35,9 @@ From the repository root, run:
 python Recursion/problems/bootstrap-language/tools/compile_site.py
 ```
 
-The command reads `source/breakfast-blaster.rec` and writes `output/breakfast-blaster.html`. The compiler accepts optional input and output paths as two arguments. It was run here with Python 3.12.14 and completed successfully. The output preserves the site title, arcade theme, centered layout, hero content, section, and three cards. This is evidence for the initial compiler stage only; it is not a self-hosting or bootstrap-equivalence proof.
+The command reads `source/breakfast-blaster.rec` and writes `output/breakfast-blaster.html`. The compiler accepts optional input and output paths as two arguments. It was run here with Python 3.12.14 and completed successfully. The output preserves the site title, configured dark palette, centered layout, hero content, section, and three cards. This is evidence for the initial compiler stage only; it is not a self-hosting or bootstrap-equivalence proof.
+
+The YAML generator uses the same design tokens. `source/site-theme.yaml` demonstrates a separately configured dark blue palette; `source/operator-brief.yaml` omits the style block and uses the neutral defaults. Both generated pages were rebuilt successfully after the shared styling change.
 
 ## Status
 

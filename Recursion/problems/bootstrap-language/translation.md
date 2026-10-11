@@ -16,6 +16,7 @@ hero:
 - `layout`: optional; `container` maps to Bootstrap `.container`, and `centered` maps to `.container.text-center`.
 - `hero`: required mapping containing `title` and `button`; `subtitle` is optional.
 - `theme`: optional; `light` is the default and `blue-dark` selects Bootstrap dark mode with a primary-blue navbar.
+- `style`: optional visual tokens for background, surface, text, muted text, accent colors, hero gradient colors, and corner radius. Neutral light or dark defaults are used for unspecified values. Each color accepts a six-digit hex value; radius accepts pixels.
 - `layout: wide` enables a fluid responsive shell; `max_width` sets its desktop maximum in pixels (defaults to `1080px`).
 - `navbar`: optional mapping with a required `brand` and an `items` list. Each item has a `label` and same-page `href` such as `#home`.
 - All values are text. Quote a value when YAML punctuation or special characters require it.
@@ -25,7 +26,7 @@ The responsive blue-dark example is fully specified in [`source/site-theme.yaml`
 
 ## Translation rules
 
-The generator implements the small operator-brief schema above plus an optional responsive navbar and blue-dark wide theme. The larger site syntax in `source/breakfast-blaster.rec` is inventoried below as the planned mapping; it is not accepted by `build_page.py` yet. Keeping that boundary explicit lets the generator reject unsupported input instead of silently dropping content.
+The YAML generator implements the small operator-brief schema above plus an optional responsive navbar, theme mode, wide layout, and configurable design tokens. The separate `.rec` compiler implements the larger site syntax below.
 
 ### Implemented YAML subset
 
@@ -37,7 +38,8 @@ The generator implements the small operator-brief schema above plus an optional 
 | `hero.title` | Escaped `<h1>` text |
 | `hero.subtitle` | Optional escaped `<p class="lead">` |
 | `hero.button` | Escaped `<button type="button" class="btn btn-primary">` |
-| `theme: blue-dark` | `data-bs-theme="dark"` on `<html>` and primary-blue navbar |
+| `theme: blue-dark` | `data-bs-theme="dark"` on `<html>` |
+| `style` | CSS design tokens used by the shared page, hero, button, and card styles |
 | `layout: wide`, `max_width: 1080px` | Fluid Bootstrap shell with a custom 1080px maximum width and centered margins |
 | `navbar.brand` | Escaped `.navbar-brand` text linking to `#home` |
 | `navbar.items[]` | Escaped `.nav-link` anchors within a responsive `.navbar-expand-lg` navigation |
@@ -48,7 +50,7 @@ The generator implements the small operator-brief schema above plus an optional 
 | Recursion syntax | YAML meaning | Planned Bootstrap HTML |
 | --- | --- | --- |
 | `site "Name"` | `site: Name` | Document `<title>` text |
-| `theme: arcade` | `theme: arcade` | `data-theme="arcade"` on the body and a matching `theme-arcade` class |
+| `style:` and its color/shape properties | CSS design tokens | Shared layout styling uses the supplied palette and radius; the compiler does not infer a style from the site's subject |
 | `layout: centered` | `layout: centered` | `.container.text-center` main wrapper |
 | `layout: container` | `layout: container` | `.container` main wrapper |
 | `hero:` | `hero:` mapping | Semantic `<header>` with responsive spacing inside main |
@@ -58,13 +60,13 @@ The generator implements the small operator-brief schema above plus an optional 
 | `section "Name"` | Item in `sections` with `title: Name` | `<section>` with an `<h2>` |
 | `card "Name"` | Item in that section's `cards` list | Bootstrap card inside a responsive row and column |
 
-`tools/compile_site.py` implements this mapping for the current syntax in `source/breakfast-blaster.rec`. It accepts `light`, `arcade`, and `blue-dark` themes and `centered` or `container` layouts. It rejects unknown statements and invalid indentation rather than silently dropping input.
+`tools/compile_site.py` implements this mapping for the current syntax in `source/breakfast-blaster.rec`. It accepts `light` and `blue-dark` base modes and `centered` or `container` layouts. The visual design comes from the optional style settings in the source; without them, a neutral palette is used. It rejects unknown statements and invalid indentation rather than silently dropping input.
 
-Theme names such as `arcade` remain data values. The compiler must escape all user-provided text and validate theme and layout choices before emitting attributes or classes.
+The compiler escapes user-provided text and validates theme, layout, color, and radius values before emitting attributes, classes, or CSS.
 
 The output is a complete HTML5 page with English language metadata, UTF-8, responsive viewport metadata, and pinned Bootstrap 5.3.8 CSS and JavaScript CDN links with Subresource Integrity. Pages without a navbar do not need the JavaScript bundle. Bootstrap styling and navbar behavior require the CDN to be reachable or the assets to be replaced with local copies. The CDN version and integrity values follow the [official Bootstrap 5.3 quick start](https://getbootstrap.com/docs/5.3/getting-started/introduction/); the `.container` and `.btn` classes follow the official [containers](https://getbootstrap.com/docs/5.3/layout/containers/) and [buttons](https://getbootstrap.com/docs/5.3/components/buttons/) documentation.
 
-The blue-dark page uses Bootstrap's `data-bs-theme="dark"` color mode, `.bg-primary`, and responsive navbar collapse behavior. The 1080px shell is its only custom width rule; its padding, navigation, button, and spacing use Bootstrap classes. These choices follow the official [navbar](https://getbootstrap.com/docs/5.3/components/navbar/), [color modes](https://getbootstrap.com/docs/5.3/customize/color-modes/), and [spacing utilities](https://getbootstrap.com/docs/5.3/utilities/spacing/) documentation.
+The blue-dark page uses Bootstrap's `data-bs-theme="dark"` color mode. Responsive layout and navbar behavior use Bootstrap classes; the shared design tokens control page-specific colors and corner radius. These choices follow the official [navbar](https://getbootstrap.com/docs/5.3/components/navbar/), [color modes](https://getbootstrap.com/docs/5.3/customize/color-modes/), and [spacing utilities](https://getbootstrap.com/docs/5.3/utilities/spacing/) documentation.
 
 ## Run locally
 
