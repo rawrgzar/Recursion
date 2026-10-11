@@ -15,6 +15,10 @@ hero:
 - `page`: required, non-empty text used for the document title.
 - `layout`: optional; `container` maps to Bootstrap `.container`, and `centered` maps to `.container.text-center`.
 - `hero`: required mapping containing `title` and `button`; `subtitle` is optional.
+- `hero.image` and `hero.image_alt`: optional local image and descriptive alt text; `button_href` may point to an in-page anchor.
+- `cards_heading` and `cards`: optional heading and list of titled information cards with short text.
+- `feature`: optional image-led information section with a title, text, and optional image/alt text.
+- `references`: optional list of titled HTTPS links rendered as further reading.
 - `theme`: optional; `light` is the default and `blue-dark` selects Bootstrap dark mode with a primary-blue navbar.
 - `style`: optional visual tokens for background, surface, text, muted text, accent colors, hero gradient colors, and corner radius. Neutral light or dark defaults are used for unspecified values. Each color accepts a six-digit hex value; radius accepts pixels.
 - `layout: wide` enables a fluid responsive shell; `max_width` sets its desktop maximum in pixels (defaults to `1080px`).
@@ -43,6 +47,9 @@ The YAML generator implements the small operator-brief schema above plus an opti
 | `layout: wide`, `max_width: 1080px` | Fluid Bootstrap shell with a custom 1080px maximum width and centered margins |
 | `navbar.brand` | Escaped `.navbar-brand` text linking to `#home` |
 | `navbar.items[]` | Escaped `.nav-link` anchors within a responsive `.navbar-expand-lg` navigation |
+| `hero.image` / `feature.image` | Responsive locally referenced images with required descriptive alt text |
+| `cards[]` | Responsive grid of escaped information cards |
+| `references[]` | Escaped, clickable further-reading links |
 | Wide layout spacing | Bootstrap `px-3 px-sm-4`, `py-4 py-lg-5`, and `py-4 py-md-5` responsive spacing utilities |
 
 ### Implemented `.rec` site mapping
@@ -61,6 +68,12 @@ The YAML generator implements the small operator-brief schema above plus an opti
 | `card "Name"` | Item in that section's `cards` list | Bootstrap card inside a responsive row and column |
 
 `tools/compile_site.py` implements this mapping for the current syntax in `source/breakfast-blaster.rec`. It accepts `light` and `blue-dark` base modes and `centered` or `container` layouts. The visual design comes from the optional style settings in the source; without them, a neutral palette is used. It rejects unknown statements and invalid indentation rather than silently dropping input.
+
+`source/pancake-guide.yaml` demonstrates the extended YAML content schema with locally stored photos in `assets/`, technique cards, an image-led section, and source links. Rebuild it from the repository root with:
+
+```text
+python Recursion/problems/bootstrap-language/tools/build_page.py Recursion/problems/bootstrap-language/source/pancake-guide.yaml Recursion/problems/bootstrap-language/output/pancake-guide.html
+```
 
 The compiler escapes user-provided text and validates theme, layout, color, and radius values before emitting attributes, classes, or CSS.
 

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pancake Field Notes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    :root {
+      --site-background: #f6f4ee;
+      --site-surface: #fffefa;
+      --site-text: #27343b;
+      --site-muted: #637078;
+      --site-accent: #a65335;
+      --site-accent-text: #ffffff;
+      --site-hero-start: #f3dfc5;
+      --site-hero-end: #fcf4e8;
+      --site-radius: 28px;
+    }
+    body.site-page { min-height: 100vh; color: var(--site-text); background: var(--site-background); }
+    .site-page main { max-width: 1080px; }
+    .site-hero {
+      position: relative; isolation: isolate; overflow: hidden;
+      margin-bottom: clamp(2rem, 6vw, 4.5rem);
+      padding: clamp(2.5rem, 8vw, 6rem) clamp(1.5rem, 7vw, 5.5rem) !important;
+      border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent);
+      border-radius: var(--site-radius);
+      background: linear-gradient(125deg, var(--site-hero-start), var(--site-hero-end));
+      box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--site-text) 12%, transparent);
+    }
+    .site-hero::after {
+      position: absolute; z-index: -1; top: -8rem; right: -5rem;
+      width: clamp(14rem, 40vw, 28rem); aspect-ratio: 1;
+      border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--site-accent) 28%, transparent), transparent 70%);
+      box-shadow: 0 0 0 2rem color-mix(in srgb, var(--site-text) 3%, transparent);
+      content: "";
+    }
+    .site-hero h1 { max-width: 15ch; margin-inline: auto; font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1; letter-spacing: -.05em; text-wrap: balance; }
+    .site-hero .lead { color: var(--site-muted); font-size: clamp(1.1rem, 2vw, 1.35rem); }
+    .site-hero.has-image { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .9fr); align-items: center; gap: clamp(2rem, 6vw, 5rem); text-align: left; }
+    .site-hero.has-image h1 { margin-inline: 0; }
+    .site-photo { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--site-radius); box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--site-text) 18%, transparent); }
+    .site-feature { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); align-items: center; gap: clamp(2rem, 6vw, 5rem); margin-top: clamp(3rem, 8vw, 6rem); padding: clamp(1rem, 3vw, 2rem) 0; }
+    .site-feature h2 { font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -.04em; }
+    .site-feature p { color: var(--site-muted); font-size: 1.08rem; line-height: 1.8; }
+    .site-feature .site-photo { aspect-ratio: 5 / 4; }
+    .site-references { margin-top: clamp(3rem, 8vw, 6rem); padding: 1.5rem 0 2rem; border-top: 1px solid color-mix(in srgb, var(--site-text) 14%, transparent); color: var(--site-muted); font-size: .92rem; }
+    .site-references a { color: var(--site-accent); }
+    .site-page .btn-primary { padding: .85rem 1.5rem; border: 0; border-radius: 999px; color: var(--site-accent-text); background: var(--site-accent); box-shadow: 0 .6rem 1.5rem color-mix(in srgb, var(--site-accent) 28%, transparent); font-weight: 700; transition: transform .18s ease, box-shadow .18s ease; }
+    .site-page .btn-primary:hover { color: var(--site-accent-text); background: color-mix(in srgb, var(--site-accent) 88%, var(--site-text)); transform: translateY(-2px); }
+    .site-page .navbar { background: var(--site-accent) !important; color: var(--site-accent-text) !important; }
+    .site-page .navbar .navbar-brand, .site-page .navbar .nav-link { color: var(--site-accent-text) !important; }
+    .site-page section > h2 { margin-bottom: 1.5rem !important; font-size: clamp(1.6rem, 3vw, 2.15rem); letter-spacing: -.03em; }
+    .site-card { height: 100%; overflow: hidden; border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent); border-radius: var(--site-radius); color: var(--site-text); background: var(--site-surface); box-shadow: 0 .75rem 2rem color-mix(in srgb, var(--site-text) 8%, transparent); text-align: left; transition: transform .18s ease, box-shadow .18s ease; }
+    .site-card::before { display: block; height: 3px; background: linear-gradient(90deg, var(--site-accent), var(--site-hero-end)); content: ""; }
+    .site-card:hover { box-shadow: 0 1rem 2rem color-mix(in srgb, var(--site-text) 14%, transparent); transform: translateY(-3px); }
+    .site-card .card-body { padding: 1.5rem; }
+    @media (max-width: 767.98px) { .site-hero.has-image, .site-feature { grid-template-columns: 1fr; } .site-hero.has-image { text-align: center; } .site-hero.has-image h1 { margin-inline: auto; } }
+    @media (prefers-reduced-motion: reduce) { .site-page .btn-primary, .site-card { transition: none; } .site-page .btn-primary:hover, .site-card:hover { transform: none; } }
+    .recursion-shell { max-width: 1120px; margin-inline: auto; }
+  </style>
+</head>
+<body class="site-page">
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" aria-label="Main navigation">
+    <div class="container-fluid px-3 px-sm-4 recursion-shell">
+      <a class="navbar-brand" href="#home">Pancake Field Notes</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#siteNavigation" aria-controls="siteNavigation" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="siteNavigation">
+        <ul class="navbar-nav gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#method">The technique</a></li>
+          <li class="nav-item"><a class="nav-link" href="#styles">Around the world</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <main id="home" class="container-fluid px-3 px-sm-4 recursion-shell py-4 py-lg-5">
+    <section id="start" class="site-hero has-image py-4 py-md-5">
+      <div class="site-hero-copy">
+      <h1 class="display-5 fw-bold mb-3">Pancakes, made simple.</h1>
+      <p class="lead mb-4">A little know-how for a better stack—and a few delicious ways to make it your own.</p>
+      <a class="btn btn-primary btn-lg" href="#method">Find your flip</a>
+    </div>
+    <img class="site-photo" src="../assets/pancakes-stack.jpg" alt="Two golden pancakes with maple syrup on a white plate" fetchpriority="high">
+    </section>
+    <section id="method" class="py-4" aria-labelledby="cards-heading">
+      <h2 id="cards-heading" class="h2 mb-4">Small details. Softer pancakes.</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col"><article class="site-card"><div class="card-body"><h3 class="h5 card-title">Mix with a light hand</h3><p class="mb-0 mt-2">Stir the wet and dry ingredients just until combined. A few small lumps are fine; overmixing can make pancakes tougher.</p></div></article></div>
+        <div class="col"><article class="site-card"><div class="card-body"><h3 class="h5 card-title">Give the pan a moment</h3><p class="mb-0 mt-2">Use a lightly greased pan over steady medium heat. If the outside colors before the middle cooks, lower the heat a little.</p></div></article></div>
+        <div class="col"><article class="site-card"><div class="card-body"><h3 class="h5 card-title">Watch for the flip</h3><p class="mb-0 mt-2">Turn the pancake when bubbles appear across the surface and the edges begin to look set. Cook the second side until golden.</p></div></article></div>
+      </div>
+    </section>
+    <section id="styles" class="site-feature" aria-label="One name. Many traditions.">
+      <img class="site-photo" src="../assets/english-pancakes.jpg" alt="A thin English-style pancake served folded on a plate" loading="lazy">
+      <div class="site-feature-copy">
+        <h2>One name. Many traditions.</h2>
+        <p>Pancakes are a broad family of quick-cooking batters and griddle cakes. Some are thin and flexible, like English pancakes and crêpes; others rise into a thicker, airy stack. Ingredients and toppings shift with local kitchens and tastes.</p>
+      </div>
+    </section>
+    <footer class="site-references" aria-labelledby="references-heading">
+      <h2 id="references-heading" class="h5">Further reading</h2>
+      <ul class="mb-0">
+        <li><a href="https://www.smithsonianmag.com/history/a-brief-history-of-pancakes-180981667/">A brief history of pancakes — Smithsonian Magazine</a></li>
+        <li><a href="https://www.kingarthurbaking.com/blog/2017/04/20/dont-make-this-pancake-mistake">Pancake mixing and texture tips — King Arthur Baking</a></li>
+        <li><a href="https://www.kingarthurbaking.com/blog/2021/10/26/best-pancake-tips">Pancake cooking tips — King Arthur Baking</a></li>
+      </ul>
+    </footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

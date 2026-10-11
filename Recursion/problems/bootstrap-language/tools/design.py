@@ -71,6 +71,15 @@ def render_design_css(settings: dict[str, str]) -> str:
     }}
     .site-hero h1 {{ max-width: 15ch; margin-inline: auto; font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1; letter-spacing: -.05em; text-wrap: balance; }}
     .site-hero .lead {{ color: var(--site-muted); font-size: clamp(1.1rem, 2vw, 1.35rem); }}
+    .site-hero.has-image {{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .9fr); align-items: center; gap: clamp(2rem, 6vw, 5rem); text-align: left; }}
+    .site-hero.has-image h1 {{ margin-inline: 0; }}
+    .site-photo {{ display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--site-radius); box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--site-text) 18%, transparent); }}
+    .site-feature {{ display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); align-items: center; gap: clamp(2rem, 6vw, 5rem); margin-top: clamp(3rem, 8vw, 6rem); padding: clamp(1rem, 3vw, 2rem) 0; }}
+    .site-feature h2 {{ font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -.04em; }}
+    .site-feature p {{ color: var(--site-muted); font-size: 1.08rem; line-height: 1.8; }}
+    .site-feature .site-photo {{ aspect-ratio: 5 / 4; }}
+    .site-references {{ margin-top: clamp(3rem, 8vw, 6rem); padding: 1.5rem 0 2rem; border-top: 1px solid color-mix(in srgb, var(--site-text) 14%, transparent); color: var(--site-muted); font-size: .92rem; }}
+    .site-references a {{ color: var(--site-accent); }}
     .site-page .btn-primary {{ padding: .85rem 1.5rem; border: 0; border-radius: 999px; color: var(--site-accent-text); background: var(--site-accent); box-shadow: 0 .6rem 1.5rem color-mix(in srgb, var(--site-accent) 28%, transparent); font-weight: 700; transition: transform .18s ease, box-shadow .18s ease; }}
     .site-page .btn-primary:hover {{ color: var(--site-accent-text); background: color-mix(in srgb, var(--site-accent) 88%, var(--site-text)); transform: translateY(-2px); }}
     .site-page .navbar {{ background: var(--site-accent) !important; color: var(--site-accent-text) !important; }}
@@ -80,5 +89,6 @@ def render_design_css(settings: dict[str, str]) -> str:
     .site-card::before {{ display: block; height: 3px; background: linear-gradient(90deg, var(--site-accent), var(--site-hero-end)); content: ""; }}
     .site-card:hover {{ box-shadow: 0 1rem 2rem color-mix(in srgb, var(--site-text) 14%, transparent); transform: translateY(-3px); }}
     .site-card .card-body {{ padding: 1.5rem; }}
+    @media (max-width: 767.98px) {{ .site-hero.has-image, .site-feature {{ grid-template-columns: 1fr; }} .site-hero.has-image {{ text-align: center; }} .site-hero.has-image h1 {{ margin-inline: auto; }} }}
     @media (prefers-reduced-motion: reduce) {{ .site-page .btn-primary, .site-card {{ transition: none; }} .site-page .btn-primary:hover, .site-card:hover {{ transform: none; }} }}
   </style>'''

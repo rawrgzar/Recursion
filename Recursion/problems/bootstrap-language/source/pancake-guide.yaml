@@ -1,0 +1,49 @@
+page: Pancake Field Notes
+theme: light
+layout: wide
+max_width: 1120px
+style:
+  background: "#f6f4ee"
+  surface: "#fffefa"
+  text: "#27343b"
+  muted: "#637078"
+  accent: "#a65335"
+  accent_text: "#ffffff"
+  hero_start: "#f3dfc5"
+  hero_end: "#fcf4e8"
+  radius: 28px
+navbar:
+  brand: Pancake Field Notes
+  items:
+    - label: The technique
+      href: "#method"
+    - label: Around the world
+      href: "#styles"
+hero:
+  title: Pancakes, made simple.
+  subtitle: A little know-how for a better stack—and a few delicious ways to make it your own.
+  button: Find your flip
+  button_href: "#method"
+  image: ../assets/pancakes-stack.jpg
+  image_alt: Two golden pancakes with maple syrup on a white plate
+cards_heading: Small details. Softer pancakes.
+cards:
+  - title: Mix with a light hand
+    text: Stir the wet and dry ingredients just until combined. A few small lumps are fine; overmixing can make pancakes tougher.
+  - title: Give the pan a moment
+    text: Use a lightly greased pan over steady medium heat. If the outside colors before the middle cooks, lower the heat a little.
+  - title: Watch for the flip
+    text: Turn the pancake when bubbles appear across the surface and the edges begin to look set. Cook the second side until golden.
+feature:
+  id: styles
+  title: One name. Many traditions.
+  text: Pancakes are a broad family of quick-cooking batters and griddle cakes. Some are thin and flexible, like English pancakes and crêpes; others rise into a thicker, airy stack. Ingredients and toppings shift with local kitchens and tastes.
+  image: ../assets/english-pancakes.jpg
+  image_alt: A thin English-style pancake served folded on a plate
+references:
+  - title: A brief history of pancakes — Smithsonian Magazine
+    href: https://www.smithsonianmag.com/history/a-brief-history-of-pancakes-180981667/
+  - title: Pancake mixing and texture tips — King Arthur Baking
+    href: https://www.kingarthurbaking.com/blog/2017/04/20/dont-make-this-pancake-mistake
+  - title: Pancake cooking tips — King Arthur Baking
+    href: https://www.kingarthurbaking.com/blog/2021/10/26/best-pancake-tips
