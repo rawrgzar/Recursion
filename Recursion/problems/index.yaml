@@ -1,7 +1,7 @@
 problems:
   - id: cold-start
     path: cold-start
-    status: ready
+    status: done
     depends_on: []
   - id: bootstrap-language
     path: bootstrap-language
