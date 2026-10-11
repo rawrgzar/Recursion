@@ -7,5 +7,6 @@ acceptance:
   - Inventory the current syntax and publish the initial reserved-word list.
   - Define the supported YAML page schema and deterministic Bootstrap HTML mapping.
   - Provide a repeatable local generator and build the operator example from YAML.
+  - Include a second generated example with a blue dark theme, responsive top menu, and 1080px desktop shell.
   - Preserve source inputs and stage outputs in the named folders.
   - Record commands and a repeatable comparison demonstrating the bootstrap result.

@@ -15,12 +15,17 @@ hero:
 - `page`: required, non-empty text used for the document title.
 - `layout`: optional; `container` maps to Bootstrap `.container`, and `centered` maps to `.container.text-center`.
 - `hero`: required mapping containing `title` and `button`; `subtitle` is optional.
+- `theme`: optional; `light` is the default and `blue-dark` selects Bootstrap dark mode with a primary-blue navbar.
+- `layout: wide` enables a fluid responsive shell; `max_width` sets its desktop maximum in pixels (defaults to `1080px`).
+- `navbar`: optional mapping with a required `brand` and an `items` list. Each item has a `label` and same-page `href` such as `#home`.
 - All values are text. Quote a value when YAML punctuation or special characters require it.
 - Any other key, duplicate key, invalid indentation, missing required value, or unsupported layout stops generation with a line-specific error.
 
+The responsive blue-dark example is fully specified in [`source/site-theme.yaml`](source/site-theme.yaml).
+
 ## Translation rules
 
-The initial generator implements the small operator-brief schema above. The larger site syntax in `source/breakfast-blaster.rec` is inventoried below as the planned mapping; it is not accepted by `build_page.py` yet. Keeping that boundary explicit lets the generator reject unsupported input instead of silently dropping content.
+The generator implements the small operator-brief schema above plus an optional responsive navbar and blue-dark wide theme. The larger site syntax in `source/breakfast-blaster.rec` is inventoried below as the planned mapping; it is not accepted by `build_page.py` yet. Keeping that boundary explicit lets the generator reject unsupported input instead of silently dropping content.
 
 ### Implemented YAML subset
 
@@ -32,6 +37,11 @@ The initial generator implements the small operator-brief schema above. The larg
 | `hero.title` | Escaped `<h1>` text |
 | `hero.subtitle` | Optional escaped `<p class="lead">` |
 | `hero.button` | Escaped `<button type="button" class="btn btn-primary">` |
+| `theme: blue-dark` | `data-bs-theme="dark"` on `<html>` and primary-blue navbar |
+| `layout: wide`, `max_width: 1080px` | Fluid Bootstrap shell with a custom 1080px maximum width and centered margins |
+| `navbar.brand` | Escaped `.navbar-brand` text linking to `#home` |
+| `navbar.items[]` | Escaped `.nav-link` anchors within a responsive `.navbar-expand-lg` navigation |
+| Wide layout spacing | Bootstrap `px-3 px-sm-4`, `py-4 py-lg-5`, and `py-4 py-md-5` responsive spacing utilities |
 
 ### Planned full-site mapping
 
@@ -50,7 +60,9 @@ The initial generator implements the small operator-brief schema above. The larg
 
 Theme names such as `arcade` remain data values. The compiler must escape all user-provided text and validate theme and layout choices before emitting attributes or classes.
 
-The output is a complete HTML5 page with English language metadata, UTF-8, responsive viewport metadata, and a pinned Bootstrap 5.3.8 CSS CDN link with Subresource Integrity. No Bootstrap JavaScript is included because this first schema has no interactive components. The page works offline as a static HTML document, but Bootstrap styling requires the CSS CDN to be reachable or replaced with a local copy. The CDN version and integrity value follow the [official Bootstrap 5.3 quick start](https://getbootstrap.com/docs/5.3/getting-started/introduction/); the `.container` and `.btn` classes follow the official [containers](https://getbootstrap.com/docs/5.3/layout/containers/) and [buttons](https://getbootstrap.com/docs/5.3/components/buttons/) documentation.
+The output is a complete HTML5 page with English language metadata, UTF-8, responsive viewport metadata, and pinned Bootstrap 5.3.8 CSS and JavaScript CDN links with Subresource Integrity. Pages without a navbar do not need the JavaScript bundle. Bootstrap styling and navbar behavior require the CDN to be reachable or the assets to be replaced with local copies. The CDN version and integrity values follow the [official Bootstrap 5.3 quick start](https://getbootstrap.com/docs/5.3/getting-started/introduction/); the `.container` and `.btn` classes follow the official [containers](https://getbootstrap.com/docs/5.3/layout/containers/) and [buttons](https://getbootstrap.com/docs/5.3/components/buttons/) documentation.
+
+The blue-dark page uses Bootstrap's `data-bs-theme="dark"` color mode, `.bg-primary`, and responsive navbar collapse behavior. The 1080px shell is its only custom width rule; its padding, navigation, button, and spacing use Bootstrap classes. These choices follow the official [navbar](https://getbootstrap.com/docs/5.3/components/navbar/), [color modes](https://getbootstrap.com/docs/5.3/customize/color-modes/), and [spacing utilities](https://getbootstrap.com/docs/5.3/utilities/spacing/) documentation.
 
 ## Run locally
 

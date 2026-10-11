@@ -20,5 +20,17 @@ words:
     context: Card declaration inside a section
   - word: page
     context: Normalized YAML page title key
+  - word: max_width
+    context: Maximum pixel width for a wide site shell
+  - word: navbar
+    context: Responsive top navigation block
+  - word: brand
+    context: Navbar brand label
+  - word: items
+    context: Navbar menu item list
+  - word: label
+    context: Navbar menu item text
+  - word: href
+    context: In-page anchor for a navbar menu item
   - word: print
     context: Cold-start smoke statement

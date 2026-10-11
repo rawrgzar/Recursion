@@ -1,0 +1,15 @@
+page: Breakfast Blaster
+theme: blue-dark
+layout: wide
+max_width: 1080px
+navbar:
+  brand: Breakfast Blaster
+  items:
+    - label: Home
+      href: "#home"
+    - label: Start
+      href: "#start"
+hero:
+  title: Ready for breakfast?
+  subtitle: Build. Discover. Repeat.
+  button: Start Game
