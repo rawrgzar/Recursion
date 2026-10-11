@@ -10,6 +10,8 @@ The bootstrap target is a local generator that turns a small, explicit YAML page
 2. **Generate:** `tools/build_page.py` validates the schema and writes a complete static page with escaped content, responsive Bootstrap layout, optional collapsible navbar, heading, and primary button.
 3. **Bootstrap proof:** a future compiler stage must generate the next stage and rebuild the agreed target. Record commands, outputs, and a repeatable comparison here when implemented.
 
+The first `.rec` compiler is `tools/compile_site.py`. It implements the current `site`, `theme`, `layout`, `hero`, `section`, and `card` example syntax and emits standalone Bootstrap HTML. It is a Python stage-zero compiler; it does not yet generate or rebuild itself.
+
 ## Syntax inventory
 
 The current Recursion example uses reserved syntax words `site`, `theme`, `layout`, `hero`, `title`, `subtitle`, `button`, `section`, and `card`. `print` is reserved for the cold-start smoke program. The normalized YAML page schema also reserves `page`, `max_width`, `navbar`, `brand`, `items`, `label`, and `href`. Theme names such as `blue-dark`, `arcade`, and layout values such as `centered`, `container`, and `wide` are data values, as are display strings such as `Breakfast Blaster` and `Start Game`.
@@ -21,8 +23,19 @@ See `../../language/reserved-words.yaml`, `../../language/grammar.md`, and `tran
 - Defined the initial vocabulary, restricted YAML shape, deterministic HTML mapping, and local generator.
 - Generated the sample standalone page from `source/operator-brief.yaml`.
 - Extended the generator for an optional responsive Bootstrap navbar and generated `output/theme-navbar.html` from `source/site-theme.yaml`.
+- Added a compiler for `source/breakfast-blaster.rec`; its generated page is `output/breakfast-blaster.html`.
 - The self-hosted compiler stages and bootstrap comparison remain incomplete.
+
+## Reproduce the `.rec` compilation
+
+From the repository root, run:
+
+```text
+python Recursion/problems/bootstrap-language/tools/compile_site.py
+```
+
+The command reads `source/breakfast-blaster.rec` and writes `output/breakfast-blaster.html`. The compiler accepts optional input and output paths as two arguments. It was run here with Python 3.12.14 and completed successfully. The output preserves the site title, arcade theme, centered layout, hero content, section, and three cards. This is evidence for the initial compiler stage only; it is not a self-hosting or bootstrap-equivalence proof.
 
 ## Status
 
-In progress. The YAML-to-static-page stage is implemented; the language compiler bootstrap proof remains open.
+In progress. Both the YAML-to-static-page generator and the initial `.rec` compiler are implemented. The language compiler bootstrap proof remains open.

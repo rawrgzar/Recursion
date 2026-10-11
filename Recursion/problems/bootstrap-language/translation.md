@@ -43,20 +43,22 @@ The generator implements the small operator-brief schema above plus an optional 
 | `navbar.items[]` | Escaped `.nav-link` anchors within a responsive `.navbar-expand-lg` navigation |
 | Wide layout spacing | Bootstrap `px-3 px-sm-4`, `py-4 py-lg-5`, and `py-4 py-md-5` responsive spacing utilities |
 
-### Planned full-site mapping
+### Implemented `.rec` site mapping
 
 | Recursion syntax | YAML meaning | Planned Bootstrap HTML |
 | --- | --- | --- |
-| `site "Name"` | `site: Name` | Document `<title>` and visible site heading |
-| `theme: arcade` | `theme: arcade` | `data-theme="arcade"` on the body and a matching `theme-arcade` class for optional project CSS |
+| `site "Name"` | `site: Name` | Document `<title>` text |
+| `theme: arcade` | `theme: arcade` | `data-theme="arcade"` on the body and a matching `theme-arcade` class |
 | `layout: centered` | `layout: centered` | `.container.text-center` main wrapper |
 | `layout: container` | `layout: container` | `.container` main wrapper |
-| `hero:` | `hero:` mapping | Semantic `<header class="py-5">` inside main |
+| `hero:` | `hero:` mapping | Semantic `<header>` with responsive spacing inside main |
 | `title` | `hero.title` | Escaped `<h1>` |
 | `subtitle` | `hero.subtitle` | Escaped `<p class="lead">` |
 | `button` | `hero.button` | Escaped primary Bootstrap button |
 | `section "Name"` | Item in `sections` with `title: Name` | `<section>` with an `<h2>` |
 | `card "Name"` | Item in that section's `cards` list | Bootstrap card inside a responsive row and column |
+
+`tools/compile_site.py` implements this mapping for the current syntax in `source/breakfast-blaster.rec`. It accepts `light`, `arcade`, and `blue-dark` themes and `centered` or `container` layouts. It rejects unknown statements and invalid indentation rather than silently dropping input.
 
 Theme names such as `arcade` remain data values. The compiler must escape all user-provided text and validate theme and layout choices before emitting attributes or classes.
 
@@ -76,4 +78,16 @@ The command reads `source/operator-brief.yaml` and writes `output/operator-brief
 
 ```text
 python Recursion/problems/bootstrap-language/tools/build_page.py input.yaml output.html
+```
+
+Compile the Recursion site example from the repository root:
+
+```text
+python Recursion/problems/bootstrap-language/tools/compile_site.py
+```
+
+This reads `source/breakfast-blaster.rec` and writes `output/breakfast-blaster.html`. Pass input and output paths to compile another `.rec` file:
+
+```text
+python Recursion/problems/bootstrap-language/tools/compile_site.py input.rec output.html
 ```
