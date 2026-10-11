@@ -1,0 +1,7 @@
+Page Breakfast Blaster, Title Ready for breakfast?
+
+page: Breakfast Blaster
+layout: container
+hero:
+  title: Ready for breakfast?
+  button: Start Game

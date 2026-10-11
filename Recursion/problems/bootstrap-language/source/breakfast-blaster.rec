@@ -1,0 +1,13 @@
+site "Breakfast Blaster"
+  theme: arcade
+  layout: centered
+
+  hero:
+    title: "Ready for breakfast?"
+    subtitle: "Build. Discover. Repeat."
+    button: "Start Exploring"
+
+  section "How it works"
+    card "Discover"
+    card "Collaborate"
+    card "Contribute"

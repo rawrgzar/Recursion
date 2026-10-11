@@ -5,5 +5,6 @@ parent: null
 depends_on: [cold-start]
 acceptance:
   - Define compiler stages and the agreed target in HANDOFF.md.
+  - Preserve an operator brief, generated Recursion source, and expected HTML example.
   - Preserve source inputs and stage outputs in the named folders.
   - Record commands and a repeatable comparison demonstrating the bootstrap result.
