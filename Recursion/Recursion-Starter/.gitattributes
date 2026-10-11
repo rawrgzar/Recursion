@@ -1,5 +1,0 @@
-# Keep text files consistent across platforms.
-* text=auto
-
-# Preserve the logo as a binary asset.
-*.png binary
