@@ -11,6 +11,28 @@ Recursion solves complex problems by expressing work as small tasks that can be 
 - **Prefer simple tools.** Do not require a particular agent vendor or hosted service.
 - **Work locally by default.** The repository owner decides when to commit or publish.
 
+## Work cycle
+
+Use this cycle to move from an available problem to a verified handoff. Save completed work and handoff notes in local files; the repository owner decides when to commit them.
+
+```mermaid
+flowchart TD
+    A[Discover mission and Git state] --> B[Find available problem]
+    B --> C[Claim task and record scope]
+    C --> D[Investigate and execute]
+    D --> E{Can work be delegated?}
+    E -- Yes --> F[Create bounded child problem]
+    F --> G[Child agent executes same protocol]
+    G --> H[Review child results]
+    H --> D
+    E -- No --> I[Verify acceptance criteria]
+    I --> J{Passed?}
+    J -- No --> D
+    J -- Yes --> K[Save results and handoff locally]
+    K --> L[Discover next problem]
+    L --> B
+```
+
 ## Initial proofs
 
 1. **Cold start:** the initial language example runs from a clean checkout without generated compiler outputs.
