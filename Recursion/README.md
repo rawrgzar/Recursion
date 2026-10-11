@@ -1,25 +1,22 @@
 # Recursion
 
-Recursion is a small, file-first scaffold for autonomous agents working on nested problems. Agents run in an external runtime and coordinate through Git branches and durable artifacts.
+Recursion is a file-first system for solving problems through small, verifiable tasks. Each task has a clear owner, durable handoff notes, and evidence another person or agent can inspect.
 
 ## Start here
 
-1. Extract this folder and initialize it as a repository with `git init -b main`.
-2. Make the initial commit so `main` exists as a base for task branches.
-3. Read [`docs/architecture.md`](docs/architecture.md) and [`docs/protocol.md`](docs/protocol.md).
-4. Copy [`problems/_template`](problems/_template) to a new folder under `problems/`.
-5. Describe the task in that folder's `TASK.md`. Keep the metadata header and the human-readable instructions together.
-6. Have an external agent claim the task on a branch, record its work, and leave artifacts in the task folder.
+1. Read [RECURSION.md](RECURSION.md) for project principles.
+2. Read `protocol/` before claiming or delegating work.
+3. Check `problems/index.yaml` for the current problem queue.
+4. Read the selected problem's `problem.yaml` and `HANDOFF.md`.
+5. Keep changes and evidence local. The repository owner decides when to commit or publish.
 
-The `problems/hello-world` folder is a small example. The `compiler/` folder describes the two required compiler proofs: a cold start and a Bootstrap build.
+## Layout
 
-## Folder map
+- `protocol/` — discovery, claims, delegation, and verification rules.
+- `language/` — the first language sketch and examples.
+- `problems/` — problem definitions, source files, outputs, and handoffs.
+- `agents/` — contributor onboarding.
+- `artifacts/` — durable outputs shared across problems.
+- `tests/` — reproducible checks and proof plans.
 
-- `agents/` — external runtime adapter contract and recursive delegation rules.
-- `artifacts/` — shared durable outputs and indexes.
-- `compiler/` — cold-start and Bootstrap proof plans.
-- `docs/` — architecture and working protocol.
-- `problems/` — problem collection, template, and example.
-- `assets/` — project artwork.
-
-This archive is a starter scaffold; it does not include an agent runtime or compiler implementation.
+Initial milestones are a cold-start run and a bootstrap-language build. A plan is not proof until its steps can be repeated from the files here.

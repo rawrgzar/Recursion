@@ -1,0 +1,9 @@
+problems:
+  - id: cold-start
+    path: cold-start
+    status: ready
+    depends_on: []
+  - id: bootstrap-language
+    path: bootstrap-language
+    status: ready
+    depends_on: [cold-start]

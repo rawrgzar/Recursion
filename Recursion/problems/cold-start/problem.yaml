@@ -1,0 +1,9 @@
+id: cold-start
+title: Run the first Recursion program from a clean checkout
+status: ready
+parent: null
+depends_on: []
+acceptance:
+  - Document the minimum prerequisites and exact cold-start command.
+  - Run language/examples/hello.rec without relying on generated compiler outputs.
+  - Record expected and actual output and reproducible evidence in HANDOFF.md.
