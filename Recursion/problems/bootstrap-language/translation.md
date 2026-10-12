@@ -77,6 +77,29 @@ python Recursion/problems/bootstrap-language/tools/build_page.py Recursion/probl
 
 The compiler escapes user-provided text and validates theme, layout, color, and radius values before emitting attributes, classes, or CSS.
 
+## Implemented generic report subset
+
+`problems/bootstrap-language/tools/compile_report.py` compiles the separate `report` document grammar into a responsive data report. The report example demonstrates navigation, editorial metadata, a feature summary, metrics, interpretation notes, a two-series horizontal comparison chart, an activity list, and a data directory. Table controls are generated from optional `search`, repeated `filter`, and `page_size` settings; column headings sort, matching rows paginate, and `detail` entries provide expandable context. A chart's optional `filter` setting links its categories to the table filter using the same column. The visual system uses navy and slate surfaces with cyan, amber, coral, and mint accents.
+
+| Report syntax | Generated behavior |
+| --- | --- |
+| `metric "Label" | "Value" | "Note"` | Summary metric with an explanatory inspection title |
+| `callout` with `title` and `text` | Reading guidance or source caveat |
+| `chart` with named `series` and numeric `point` values | Responsive, accessible two-series comparison bars |
+| Repeated `table.filter: "Column"` | Value pickers built from the selected columns |
+| `chart.filter: "Column"` | Clickable chart categories filter matching table rows |
+| `table.search`, `table.page_size` | Search control and client-side pagination |
+| `column`, `row`, `detail` | Sortable table columns, escaped records, expandable record context |
+| `event "Time" | "Title" | "Detail"` | Chronological activity entry |
+
+From the repository root, rebuild the fictional report example with:
+
+```text
+python Recursion/problems/bootstrap-language/tools/compile_report.py
+```
+
+The source and a feature-by-feature analysis of the supplied workload planner are under `problems/bootstrap-language/abstract-report-interface/`. The first report-language stage supports one comparison chart and one interactive table; synchronized filters across several charts and tables remain a future extension.
+
 The output is a complete HTML5 page with English language metadata, UTF-8, responsive viewport metadata, and pinned Bootstrap 5.3.8 CSS and JavaScript CDN links with Subresource Integrity. Pages without a navbar do not need the JavaScript bundle. Bootstrap styling and navbar behavior require the CDN to be reachable or the assets to be replaced with local copies. The CDN version and integrity values follow the [official Bootstrap 5.3 quick start](https://getbootstrap.com/docs/5.3/getting-started/introduction/); the `.container` and `.btn` classes follow the official [containers](https://getbootstrap.com/docs/5.3/layout/containers/) and [buttons](https://getbootstrap.com/docs/5.3/components/buttons/) documentation.
 
 The blue-dark page uses Bootstrap's `data-bs-theme="dark"` color mode. Responsive layout and navbar behavior use Bootstrap classes; the shared design tokens control page-specific colors and corner radius. These choices follow the official [navbar](https://getbootstrap.com/docs/5.3/components/navbar/), [color modes](https://getbootstrap.com/docs/5.3/customize/color-modes/), and [spacing utilities](https://getbootstrap.com/docs/5.3/utilities/spacing/) documentation.

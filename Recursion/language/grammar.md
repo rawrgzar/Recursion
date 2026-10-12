@@ -50,4 +50,52 @@ Operators may provide a plain-text brief rather than write Recursion source. For
 
 This is a working sketch, not a settled specification. Record refinements and matching examples or verification updates in the bootstrap-language problem.
 
+## Generic report subset
+
+The abstract reporting example uses a separate `report` document root. Its compiler accepts the following focused, indentation-sensitive grammar:
+
+```text
+report "Document title"
+  nav "Brand"
+    link "Label" -> "#section-id"
+  heading
+    eyebrow: "Short label"
+    title: "Editorial heading"
+    subtitle: "Supporting summary"
+    meta: "ITEM · DATE · AUDIENCE"
+  feature
+    label: "FEATURE LABEL"
+    title: "Feature title"
+    text: "Feature description"
+    status: "Current status"
+    tooltip: "Inspection detail"
+  metrics
+    metric "Label" | "Value" | "Note"
+  callout
+    title: "How to read this report"
+    text: "Interpretation and source caveat."
+  chart
+    title: "Volume over time"
+    filter: "Collection"
+    series "Planned" | "verdant"
+    series "Incoming" | "arcane"
+    point "Window one" | "12" | "9"
+  table
+    title: "Record register"
+    search: "Search records"
+    filter: "Status"
+    page_size: 8
+    column "Column name"
+    row "Cell" | "Cell"
+    detail "First cell key" | "Expandable record context"
+  activity
+    event "Time" | "Title" | "Detail"
+  footer
+    text: "Footer note"
+```
+
+This subset is compiled by `problems/bootstrap-language/tools/compile_report.py`. It escapes source text, restricts navigation to same-page anchors and chart series to named palette tokens, validates chart values and table row widths, and emits responsive semantic HTML with reduced-motion support. The optional table search, column filters, sorting, pagination, and expandable row details work without a server. A chart's optional `filter` connects clickable categories to the matching table filter; each point label must match a value in that table column. Quoted strings may escape a quote or backslash. The pipe character separates cells in metrics, rows, details, points, and events and therefore is not currently supported inside a cell value. Chart points use one non-negative numeric value for each declared series.
+
+The report example also records lessons from the user-supplied workload-planner reference in `problems/bootstrap-language/abstract-report-interface/reference-analysis.md`. Its useful reusable patterns are represented as generic report components; the reference's domain labels and data are not part of the language example.
+
 The currently reserved vocabulary is listed in [reserved-words.yaml](reserved-words.yaml). Theme names and layout values are data values, not reserved words.

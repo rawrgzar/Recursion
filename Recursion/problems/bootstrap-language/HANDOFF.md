@@ -27,6 +27,8 @@ See `../../language/reserved-words.yaml`, `../../language/grammar.md`, and `tran
 - Added shared design tokens in `tools/design.py` and responsive hero, button, and card styling. Both YAML and `.rec` inputs can set background, surface, text, muted text, accent, hero gradient colors, and corner radius; unspecified settings use neutral light or dark defaults. Motion effects honor reduced-motion preferences.
 - Extended the YAML page schema with local hero/feature images, information cards, and a further-reading list. Added the generated pancake guide at `output/pancake-guide.html` using two project-local photos and documented sources.
 - The self-hosted compiler stages and bootstrap comparison remain incomplete.
+- Added the child task `abstract-report-interface` as a new language/compiler example. It exercises navigation, metrics, a detailed table, activity, and inspection states beyond the current stage-zero grammar. Its screenshot is explicitly supplemental; its required outcome is reproducible generated HTML.
+- Implemented the report subset in `tools/compile_report.py`, including a comparison chart, callout, and interactive table controls informed by the workload-planner reference. The fictional `source/field-notes.rec` example generates `abstract-report-interface/output/field-notes.html`; grammar, reserved vocabulary, and the reference analysis are documented alongside it.
 
 ## Reproduce the `.rec` compilation
 

@@ -54,3 +54,49 @@ words:
     context: In-page anchor for a navbar menu item
   - word: print
     context: Cold-start smoke statement
+  - word: report
+    context: Generic report document declaration
+  - word: nav
+    context: Report navigation block
+  - word: link
+    context: In-page report navigation item
+  - word: heading
+    context: Editorial report heading block
+  - word: eyebrow
+    context: Small uppercase heading label
+  - word: meta
+    context: Contextual report metadata
+  - word: feature
+    context: Prominent report summary block
+  - word: metrics
+    context: Report metric group
+  - word: metric
+    context: One labeled report value and note
+  - word: table
+    context: Report data table
+  - word: column
+    context: Report table column heading
+  - word: row
+    context: Report table data row
+  - word: activity
+    context: Chronological report activity list
+  - word: event
+    context: One report activity entry
+  - word: footer
+    context: Report footer block
+  - word: callout
+    context: Report interpretation or source caveat
+  - word: chart
+    context: Quantitative comparison visualization
+  - word: series
+    context: Named chart data series and palette token
+  - word: point
+    context: Labeled chart values for each series
+  - word: detail
+    context: Expandable context for a report table row
+  - word: search
+    context: Search placeholder for an interactive report table
+  - word: filter
+    context: Table column used to build a value filter
+  - word: page_size
+    context: Number of report table rows shown per page

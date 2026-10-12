@@ -7,3 +7,8 @@ problems:
     path: bootstrap-language
     status: in_progress
     depends_on: [cold-start]
+  - id: abstract-report-interface
+    path: bootstrap-language/abstract-report-interface
+    status: done
+    parent: bootstrap-language
+    depends_on: [cold-start]

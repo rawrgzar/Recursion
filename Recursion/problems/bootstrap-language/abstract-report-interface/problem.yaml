@@ -1,0 +1,13 @@
+id: abstract-report-interface
+title: Compile the abstract reporting interface example
+status: done
+parent: bootstrap-language
+depends_on: [cold-start]
+acceptance:
+  - Save the supplied visual brief as a durable input and create a matching Recursion source example.
+  - Extend the compiler only as needed to express and generate the example's navigation, editorial heading, feature area, metrics, data table, activity list, and footer.
+  - Express the useful reusable workload-planner patterns as generic syntax: interpretation callout, comparison chart, searchable/filterable/sortable/paginated table, and expandable row details.
+  - Generate a standalone HTML page with the supplied planner's navy/slate surface and cyan, amber, coral, and mint palette, responsive card layout, semantic structure, and restrained hover and inspection states.
+  - Keep the example source and generated output in their named source and output folders, and record the build command in HANDOFF.md.
+  - Verify reproducibility by compiling the checked-in source and confirming the generated output contains every required section and escapes supplied text safely.
+  - Treat a 1920 × 1080 screenshot as supplemental evidence when a suitable rendering tool is available; screenshot generation is not required for task completion.
