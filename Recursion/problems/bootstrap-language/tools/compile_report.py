@@ -28,7 +28,7 @@ def unquote(value: str, path: Path, line: int) -> str:
 
 
 def parse(path: Path) -> dict:
-    report: dict = {"nav": [], "metrics": [], "columns": [], "rows": [], "details": {}, "activity": [], "chart": {"series": [], "points": []}, "callout": {}, "table": {"filters": []}, "heading": {}, "feature": {}, "footer": {}}
+    report: dict = {"nav": [], "metrics": [], "columns": [], "rows": [], "details": {}, "activity": [], "profession_tabs": [], "chart": {"series": [], "points": []}, "callout": {}, "table": {"filters": []}, "heading": {}, "feature": {}, "footer": {}}
     seen: set[str] = set()
     block = ""
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
@@ -45,11 +45,11 @@ def parse(path: Path) -> dict:
             report["title"] = unquote(m.group(1), path, number)
             seen.add("title")
         elif indent == 2:
-            m = re.fullmatch(r'(nav|heading|feature|metrics|table|activity|footer|callout|chart)(?: (.+))?', text)
+            m = re.fullmatch(r'(nav|heading|feature|metrics|table|activity|footer|callout|chart|professions)(?: (.+))?', text)
             if not m:
-                raise fail(path, number, "expected nav, heading, feature, metrics, table, activity, callout, chart, or footer block")
+                raise fail(path, number, "expected nav, heading, feature, metrics, table, activity, callout, chart, professions, or footer block")
             block, arg = m.groups()
-            if block in {"heading", "feature", "metrics", "table", "activity", "footer", "callout", "chart"}:
+            if block in {"heading", "feature", "metrics", "table", "activity", "footer", "callout", "chart", "professions"}:
                 if block in seen:
                     raise fail(path, number, f"duplicate {block} block")
                 seen.add(block)
@@ -148,11 +148,31 @@ def parse(path: Path) -> dict:
                     if any(not math.isfinite(value) or value < 0 for value in values):
                         raise fail(path, number, "chart values must be non-negative numbers")
                     report["chart"]["points"].append((cells[0], values))
+            elif block == "professions":
+                m = re.fullmatch(r'profession (.+)', text)
+                if not m:
+                    raise fail(path, number, 'expected profession "Name" | "Type" | "Overview"')
+                cells = [unquote(v.strip(), path, number) for v in m.group(1).split("|")]
+                if len(cells) != 3:
+                    raise fail(path, number, 'expected profession "Name" | "Type" | "Overview"')
+                if any(item["name"] == cells[0] for item in report["profession_tabs"]):
+                    raise fail(path, number, f"duplicate profession tab {cells[0]!r}")
+                report["profession_tabs"].append({"name": cells[0], "type": cells[1], "overview": cells[2], "steps": []})
             else:
                 raise fail(path, number, "unexpected field")
+        elif indent == 6 and block == "professions":
+            m = re.fullmatch(r'step (.+)', text)
+            if not m or not report["profession_tabs"]:
+                raise fail(path, number, 'expected step "Range" | "Recipe or action" | "Count" | "Materials per craft / note" after a profession')
+            cells = [unquote(v.strip(), path, number) for v in m.group(1).split("|")]
+            if len(cells) != 4:
+                raise fail(path, number, 'expected step "Range" | "Recipe or action" | "Count" | "Materials per craft / note"')
+            report["profession_tabs"][-1]["steps"].append(cells)
         else:
             raise fail(path, number, "unexpected indentation")
-    required = {"title", "heading", "feature", "metrics", "table", "activity", "footer"}
+    required = {"title", "heading", "feature", "metrics", "activity", "footer"}
+    if "professions" not in seen:
+        required.add("table")
     missing = required - seen
     if missing:
         raise fail(path, 1, "missing required blocks: " + ", ".join(sorted(missing)))
@@ -163,10 +183,15 @@ def parse(path: Path) -> dict:
     for key in ("title", "eyebrow", "subtitle"):
         if not heading.get(key):
             raise fail(path, 1, f"heading.{key} is required")
-    if not report["metrics"] or not report["columns"] or not report["rows"] or not report["activity"]:
-        raise fail(path, 1, "metrics, table columns and rows, and activity must not be empty")
+    if not report["metrics"] or not report["activity"]:
+        raise fail(path, 1, "metrics and activity must not be empty")
+    if "table" in seen and (not report["columns"] or not report["rows"]):
+        raise fail(path, 1, "table columns and rows must not be empty")
     if any(len(row) != len(report["columns"]) for row in report["rows"]):
         raise fail(path, 1, "each table row must have the same number of cells as columns")
+    if "professions" in seen:
+        if not report["profession_tabs"] or any(not item["steps"] for item in report["profession_tabs"]):
+            raise fail(path, 1, "each profession tab must contain at least one step")
     filter_columns = report["table"]["filters"]
     if len(set(filter_columns)) != len(filter_columns):
         raise fail(path, 1, "table filter columns must be unique")
@@ -195,6 +220,9 @@ def parse(path: Path) -> dict:
 
 def render(data: dict) -> str:
     e = lambda s: html.escape(str(s), quote=True)
+    def overview_html(value: str) -> str:
+        escaped = e(value)
+        return re.sub(r"https://www\.wowhead\.com/classic/guide/[a-z0-9-]+", lambda match: f'<a class="source-link" href="{match.group(0)}" target="_blank" rel="noopener noreferrer">Wowhead guide</a>', escaped)
     nav = "\n".join(f'<a class="nav-item" href="{e(href)}">{e(label)}</a>' for label, href in data["nav"])
     metrics = "\n".join(f'<article class="metric" tabindex="0" title="{e(note)}"><span class="metric-label">{e(label)}</span><strong>{e(value)}</strong><small>{e(note)}</small></article>' for label, value, note in data["metrics"])
     table = data["table"]
@@ -236,6 +264,18 @@ def render(data: dict) -> str:
             filter_attr = f' data-chart-filter="{e(label)}" data-chart-column="{e(chart["filter"])}" aria-pressed="false"' if chart.get("filter") else ""
             plot_rows.append(f'<button class="plot-row" type="button"{filter_attr}><span class="plot-label">{e(label)}</span><span class="plot-values">{bars}</span></button>' if chart.get("filter") else f'<div class="plot-row"><span class="plot-label">{e(label)}</span><span class="plot-values">{bars}</span></div>')
         chart_html = f'<section class="panel chart-panel" id="distribution" aria-labelledby="distribution-title"><div class="section-head"><h2 id="distribution-title">{e(chart.get("title", "Comparison"))}</h2><span>COMPARISON</span></div><div class="chart-legend">{legend}</div><div class="plot">{"".join(plot_rows)}</div></section>'
+    profession_html = ""
+    if data["profession_tabs"]:
+        tab_buttons = []
+        tab_panels = []
+        for index, profession in enumerate(data["profession_tabs"]):
+            slug = re.sub(r"[^a-z0-9]+", "-", profession["name"].casefold()).strip("-")
+            active = index == 0
+            tab_buttons.append(f'<button class="profession-tab" id="tab-{slug}" type="button" role="tab" aria-controls="panel-{slug}" aria-selected="{str(active).lower()}" tabindex="{0 if active else -1}" data-profession-tab="{slug}">{e(profession["name"])}</button>')
+            step_rows = "".join(f'<tr><td class="skill-range">{e(step[0])}</td><td class="recipe-name">{e(step[1])}</td><td class="craft-count">{e(step[2])}</td><td class="step-materials">{e(step[3])}</td></tr>' for step in profession["steps"])
+            tab_panels.append(f'<section class="profession-panel" id="panel-{slug}" role="tabpanel" aria-labelledby="tab-{slug}" data-profession-panel="{slug}"{" hidden" if not active else ""}><div class="profession-summary"><span>{e(profession["type"])}</span><p>{overview_html(profession["overview"])}</p></div><div class="table-wrap"><table class="step-table"><thead><tr><th scope="col">Skill range</th><th scope="col">Recipe or action</th><th scope="col">Make / gather</th><th scope="col">Materials for row / route note</th></tr></thead><tbody>{step_rows}</tbody></table></div></section>')
+        profession_html = f'<section class="profession-guide" id="records" aria-labelledby="profession-guide-title"><div class="section-head"><div><span class="eyebrow">CHOOSE A PROFESSION</span><h2 id="profession-guide-title">Step-by-step leveling routes</h2></div><span>{len(data["profession_tabs"])} GUIDES</span></div><div class="profession-tabs" role="tablist" aria-label="Profession leveling guides">{"".join(tab_buttons)}</div>{"".join(tab_panels)}</section>'
+    records_html = profession_html or f'<section id="records" aria-labelledby="records-title"><div class="section-head"><h2 id="records-title">{e(table.get("title", "Record register"))}</h2><span>{len(data["rows"]):02d} ENTRIES</span></div><div class="table-tools"><label class="visually-hidden" for="recordSearch">Search records</label><input class="report-input" id="recordSearch" type="search" placeholder="{e(table.get("search", "Search records"))}" data-record-search>{filters_html}<span class="table-count" data-record-count></span></div><div class="table-wrap"><table data-report-table data-page-size="{page_size}" data-has-details="{str(detail_column).lower()}"><thead><tr>{headers}</tr></thead><tbody>{rows}</tbody></table></div><div class="table-pager"><button class="page-button" data-page-prev type="button">Previous</button><span data-page-label></span><button class="page-button" data-page-next type="button">Next</button></div></section>'
     nav_html = f'<nav class="topbar"><a class="brand" href="#top"><i aria-hidden="true">◈</i>{e(data.get("brand", data["title"]))}</a><div class="nav-links">{nav}</div><a class="utility" href="#records" title="Search report records">⌕ <span>Search records</span></a><span class="avatar" title="Report overview">◉</span></nav>'
     return f'''<!doctype html>
 <html lang="en">
@@ -254,6 +294,8 @@ body:before{{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;b
 .tag.ended{{color:#ffd2d9;background:#58303d}}.tag.ended:before{{background:var(--coral)}}.tag.current{{color:#ffe1af;background:#5b4429}}.tag.current:before{{background:var(--gold)}}.tag.future{{color:#c8f4e1;background:#205043}}.tag.future:before{{background:var(--verdant)}}.tag.none{{color:#d4dfed;background:#344159}}.tag.none:before{{background:#a9bdd1}}
 .table-tools{{display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding:12px 0}}.report-input,.report-select{{min-height:38px;padding:7px 11px;border:1px solid #34475e;border-radius:7px;background:#101c2d;color:#f2f7fc;font:13px Inter,ui-sans-serif,system-ui,sans-serif}}.report-input{{flex:1;min-width:190px}}.report-input::placeholder{{color:#8da3bb}}.report-input:focus,.report-select:focus{{outline:0;border-color:var(--arcane);box-shadow:0 0 0 .2rem #70d5f133}}.table-count{{margin-left:auto;color:var(--muted);font-size:11px}}.sort-button{{border:0;background:none;color:inherit;padding:0;font:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer}}.sort-button:hover,.sort-button:focus-visible{{color:var(--arcane)}}.detail-heading{{width:80px}}.detail-cell{{white-space:normal;min-width:100px}}.detail-cell details summary{{color:var(--arcane);font-size:11px;cursor:pointer}}.record-detail{{position:relative;z-index:1;min-width:230px;max-width:360px;padding:12px;margin-top:8px;white-space:normal;background:#0d1a2b;border:1px solid #31485f;border-radius:9px;color:#c5d4e3;font-size:12px;line-height:1.6}}
 .table-pager{{display:flex;justify-content:flex-end;align-items:center;gap:13px;padding-top:14px;color:var(--muted);font-size:11px}}.page-button{{border:1px solid #42657a;background:#173449;color:#bceafa;border-radius:7px;padding:6px 10px;cursor:pointer}}.page-button:hover:not(:disabled){{background:#205577;color:#fff}}.page-button:disabled{{opacity:.42;cursor:default}}.empty-row td{{padding:28px;text-align:center;color:var(--muted)}}
+.profession-guide{{min-width:0;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:0 12px 30px #050b1740}}.profession-tabs{{display:flex;gap:8px;overflow-x:auto;padding:16px 0 12px;border-bottom:1px solid var(--line);scrollbar-color:#42657a #101c2d}}.profession-tab{{flex:0 0 auto;border:1px solid #34475e;border-radius:999px;background:#101c2d;color:#b9c9d9;padding:8px 14px;font:600 12px Inter,ui-sans-serif,system-ui,sans-serif;cursor:pointer;transition:color .15s,border-color .15s,background .15s}}.profession-tab:hover,.profession-tab:focus-visible{{outline:2px solid #70d5f188;outline-offset:2px;color:#fff}}.profession-tab[aria-selected="true"]{{border-color:#70d5f1;background:#173b4e;color:#bceafa;box-shadow:inset 0 -2px #70d5f1}}.profession-panel{{padding-top:15px}}.profession-panel[hidden]{{display:none}}.profession-summary{{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;color:#b9c9d9}}.profession-summary>span{{flex:0 0 auto;color:var(--gold);font:700 10px/1.5 ui-monospace,Consolas,monospace;text-transform:uppercase;letter-spacing:.07em;padding:5px 8px;border:1px solid #59472b;border-radius:6px;background:#2d281f}}.profession-summary p{{margin:2px 0 0;font-size:13px}}.step-table{{white-space:normal;table-layout:auto}}.step-table th{{white-space:nowrap}}.step-table td{{vertical-align:top;line-height:1.5}}.step-table .skill-range{{min-width:95px;color:var(--gold);font:650 12px ui-monospace,Consolas,monospace;white-space:nowrap}}.step-table .recipe-name{{min-width:185px;color:#e8edf5;font-weight:600}}.step-table .craft-count{{min-width:105px;color:var(--verdant);font:600 12px ui-monospace,Consolas,monospace}}.step-table .step-materials{{min-width:280px;color:#b9c9d9;font-size:12px}}
+.source-link{{color:var(--arcane);font-weight:650;text-decoration:none;white-space:nowrap}}.source-link:hover,.source-link:focus-visible{{color:#fff;text-decoration:underline}}
 .activity{{list-style:none;margin:0;padding:4px 0}}.event{{display:grid;grid-template-columns:72px 1fr;gap:13px;padding:13px 0;border-bottom:1px solid #2b3d52;transition:background .18s}}.event:hover{{background:#1a3045}}.event time{{font:600 10px ui-monospace;color:var(--arcane);padding-top:3px}}.event strong{{font-weight:650;font-size:13px;color:#e8edf5}}.event p{{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.55}}footer{{margin-top:28px;padding:18px 0 24px;border-top:1px solid var(--line);color:var(--muted);font:11px Inter,ui-sans-serif,system-ui,sans-serif;display:flex;justify-content:space-between;letter-spacing:.02em}}
 @media(max-width:850px){{.shell{{width:calc(100% - 40px)}}.topbar{{gap:22px}}.nav-links{{gap:16px}}.lower{{grid-template-columns:1fr}}.metrics{{grid-template-columns:repeat(2,1fr)}}}}
 @media(max-width:560px){{.shell{{width:calc(100% - 32px)}}.topbar{{height:62px;gap:12px;margin-inline:-16px;padding-inline:16px}}.brand{{font-size:12px;letter-spacing:0}}.nav-links{{gap:12px;overflow:auto}}.nav-item{{font-size:10px}}.nav-item:nth-child(n+3){{display:none}}.utility span{{display:none}}.avatar{{display:none}}.intro{{padding-top:28px}}.meta{{display:block;line-height:2}}.meta span+span:before{{margin-inline:7px}}.feature{{grid-template-columns:1fr;padding:17px}}.feature-side{{text-align:left}}.metrics{{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}}.metric{{padding:12px 13px;min-height:96px}}.metric:first-child{{padding-left:13px}}.metric strong{{font-size:24px}}.event{{grid-template-columns:58px 1fr}}.chart-panel{{padding:15px 11px}}.plot-row{{grid-template-columns:1fr;gap:8px;padding:11px 8px}}.plot-series{{grid-template-columns:minmax(66px,.42fr) minmax(50px,1fr) 32px;gap:8px}}.table-count{{width:100%;margin:0}}footer{{gap:14px;flex-direction:column}}}}
@@ -263,11 +305,14 @@ body:before{{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;b
 <section class="feature" id="summary" tabindex="0" title="{e(f.get('tooltip', f['text']))}"><div><div class="feature-label">{e(f['label'])}</div><h2>{e(f['title'])}</h2><p>{e(f['text'])}</p></div><div class="feature-side"><span class="dot"></span>{e(f.get('status','Current'))}</div></section>
 {callout}<section class="metrics" aria-label="Report metrics">{metrics}</section>
 {chart_html}
-<div class="lower"><section id="records" aria-labelledby="records-title"><div class="section-head"><h2 id="records-title">{e(table.get('title', 'Record register'))}</h2><span>{len(data['rows']):02d} ENTRIES</span></div><div class="table-tools"><label class="visually-hidden" for="recordSearch">Search records</label><input class="report-input" id="recordSearch" type="search" placeholder="{e(table.get('search', 'Search records'))}" data-record-search>{filters_html}<span class="table-count" data-record-count></span></div><div class="table-wrap"><table data-report-table data-page-size="{page_size}" data-has-details="{str(detail_column).lower()}"><thead><tr>{headers}</tr></thead><tbody>{rows}</tbody></table></div><div class="table-pager"><button class="page-button" data-page-prev type="button">Previous</button><span data-page-label></span><button class="page-button" data-page-next type="button">Next</button></div></section>
+<div class="lower">{records_html}
 <section id="activity"><div class="section-head"><h2>Recent activity</h2><span>CHRONOLOGY</span></div><ol class="activity">{events}</ol></section></div></main>
 <footer id="notes"><span>{e(data['footer']['text'])}</span><span>GENERATED REPORT&nbsp; / &nbsp;RECURSION</span></footer></div>
 <script>
 (()=>{{
+  const tabs=[...document.querySelectorAll('[data-profession-tab]')],panels=[...document.querySelectorAll('[data-profession-panel]')];
+  function selectTab(slug){{tabs.forEach(tab=>{{const active=tab.dataset.professionTab===slug;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1}});panels.forEach(panel=>panel.hidden=panel.dataset.professionPanel!==slug)}}
+  tabs.forEach((tab,index)=>{{tab.addEventListener('click',()=>selectTab(tab.dataset.professionTab));tab.addEventListener('keydown',event=>{{if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();selectTab(tabs[next].dataset.professionTab)}})}});
   const table=document.querySelector('[data-report-table]');if(!table)return;
   const body=table.tBodies[0],rows=[...body.rows],size=Number(table.dataset.pageSize)||8,filters=[...document.querySelectorAll('[data-report-filter]')],search=document.querySelector('[data-record-search]'),count=document.querySelector('[data-record-count]'),label=document.querySelector('[data-page-label]'),prev=document.querySelector('[data-page-prev]'),next=document.querySelector('[data-page-next]');
   const empty=document.createElement('tr');empty.className='empty-row';empty.hidden=true;empty.innerHTML='<td colspan="'+table.rows[0].cells.length+'">No records match these filters.</td>';body.append(empty);

@@ -92,10 +92,17 @@ report "Document title"
     event "Time" | "Title" | "Detail"
   footer
     text: "Footer note"
+  professions
+    profession "Alchemy" | "Primary · Crafting" | "Route summary and source URL"
+      step "1–60" | "Minor Healing Potion" | "59 crafts" | "59 Peacebloom + 59 Silverleaf + 59 Empty Vials"
+    profession "Fishing" | "Secondary · Gathering" | "Suggested route summary"
+      step "1–75" | "Starting zones" | "Skill target 75" | "Fish eligible waters while questing"
 ```
 
 This subset is compiled by `problems/bootstrap-language/tools/compile_report.py`. It escapes source text, restricts navigation to same-page anchors and chart series to named palette tokens, validates chart values and table row widths, and emits responsive semantic HTML with reduced-motion support. The optional table search, column filters, sorting, pagination, and expandable row details work without a server. A chart's optional `filter` connects clickable categories to the matching table filter; each point label must match a value in that table column. Quoted strings may escape a quote or backslash. The pipe character separates cells in metrics, rows, details, points, and events and therefore is not currently supported inside a cell value. Chart points use one non-negative numeric value for each declared series.
 
 The report example also records lessons from the user-supplied workload-planner reference in `problems/bootstrap-language/abstract-report-interface/reference-analysis.md`. Its useful reusable patterns are represented as generic report components; the reference's domain labels and data are not part of the language example.
+
+The optional `professions` block renders a keyboard-operable tab for each profession. Every tab contains ordered `step` rows with a skill bracket, recipe/action, craft or gather count, and row material totals or route note. A profession overview can include its source URL. `report` pages with `professions` may omit the general-purpose `table` block. This is suited to long leveling guides where overview and per-bracket quantities need to remain readable together.
 
 The currently reserved vocabulary is listed in [reserved-words.yaml](reserved-words.yaml). Theme names and layout values are data values, not reserved words.

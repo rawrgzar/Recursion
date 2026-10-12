@@ -100,3 +100,9 @@ words:
     context: Table column used to build a value filter
   - word: page_size
     context: Number of report table rows shown per page
+  - word: professions
+    context: Optional group of profession-specific leveling tabs
+  - word: profession
+    context: Profession tab declaration with type and overview
+  - word: step
+    context: One skill-range recipe or gathering step within a profession tab
